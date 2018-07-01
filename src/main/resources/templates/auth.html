@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="utf-8" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+    <title>授权</title>
+    <style type="text/css">
+        input{
+            background: forestgreen;
+            color: ghostwhite;
+            font-size: 15px;
+            width: 80%;
+            height: 35px;
+            border: 0 ;
+            margin-top: 10px;
+        }
+
+        input:active{
+            background: green;
+            border: 0;
+        }
+
+    </style>
+    <script th:src="@{/js/jquery-3.3.1.min.js}" src=""></script>
+    <script th:inline="javascript">
+        var loginId = [[${loginId}]];
+    </script>
+</head>
+<body>
+  <center>
+        <div>
+            <input type="button" id="cancel"value="取消"/>
+            <input type="button" id="sure" value="确认授权"/>
+        </div>
+  </center>
+      <script type="text/javascript">
+
+            $("#sure").on("click",function () {
+                console.log(loginId);
+                $.ajax({
+                    type: 'POST',
+                    url: "/" + loginId + "/auth",
+                    data: {
+                        user:"张三"
+                    },
+                    success: function (data) {
+                        if(data.code=='0'){
+                            alert("授权成功");
+                        }
+                    },
+                    dataType: "json"
+                })
+            })
+      </script>
+</body>
+</html>

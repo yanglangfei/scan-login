@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="utf-8" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+
+    <script th:src="@{/js/jquery-3.3.1.min.js}" src=""></script>
+    <script type="text/javascript">
+        //获取二维码和UUID
+        getQrCode();
+
+        function getQrCode() {
+            $.get("/login/getQrCode",function (data) {
+                console.log("--------getQrCode-----------");
+                console.log(data);
+                if (!data || !data.loginId || !data.image){
+                    return;
+                }
+                $("#loginQr").attr('src','data:image/png;base64,' + data.image);
+                //轮询获取登录状态
+                getResponse(data.loginId);
+            });
+        }
+
+       function getResponse(loginId){
+           console.log("loginId:"+loginId);
+           $.get('/login/getResponse/'+ loginId,function (data) {
+               //一秒后，重新获取登录二维码
+               console.log("---------getResponse-----");
+               console.log(data);
+               var isExpire=data.isExpire;
+               if(isExpire== '1'){
+                   alert("二维码失效，请刷新");
+                   getQrCode();
+                   return;
+               }
+
+               if (!data || !data.success) {
+                   getResponse(loginId);
+                   return;
+               }
+
+               //登录成功，进去首页
+               location.href = '/'
+           })
+        }
+    </script>
+
+
+</head>
+<body>
+<h1>扫码登录</h1>
+<h4>
+    <a target="_blank" href="http://www.cnblogs.com/GoodHelper/" th:text="使用微信扫一扫">使用微信扫一扫</a>
+</h4>
+<img id="loginQr" src="" />
+</body>
+</html>
